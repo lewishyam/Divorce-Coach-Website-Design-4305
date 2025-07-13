@@ -7,17 +7,17 @@ const HeroSection = () => {
   const { openModal } = useBooking();
 
   return (
-    <section className="relative min-h-screen bg-hero-gradient overflow-hidden">
+    <section className="relative bg-hero-gradient overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-32 right-16 w-48 h-48 bg-accent/10 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-20 right-16 w-48 h-48 bg-accent/10 rounded-full blur-2xl"></div>
         <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-primary/5 rounded-full blur-lg"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 flex items-center min-h-screen">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16 flex items-center min-h-[60vh] lg:min-h-[65vh]">
         <div className="w-full text-center">
           <motion.h1
-            className="text-5xl md:text-7xl font-serif font-bold text-gray-900 mb-6"
+            className="text-5xl md:text-7xl font-serif font-bold text-gray-900 mb-3 md:mb-4"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
@@ -28,7 +28,7 @@ const HeroSection = () => {
           </motion.h1>
 
           <motion.p
-            className="text-xl md:text-2xl text-gray-700 mb-12 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-gray-700 mb-6 md:mb-8 max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
