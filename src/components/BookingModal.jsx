@@ -1,13 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import SafeIcon from '../common/SafeIcon';
 import * as FiIcons from 'react-icons/fi';
 import { useBooking } from '../context/BookingContext';
+import supabase from '../lib/supabase';
 
 const { FiX } = FiIcons;
 
 const BookingModal = () => {
   const { isModalOpen, closeModal } = useBooking();
+  const [bookingUrl, setBookingUrl] = useState("https://tidycal.com/dwd/clarity-call");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBookingUrl = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('calendar_settings_dwd2024')
+          .select('booking_url')
+          .single();
+          
+        if (error && error.code !== 'PGRST116') {
+          throw error;
+        }
+        
+        if (data && data.booking_url) {
+          setBookingUrl(data.booking_url);
+        }
+      } catch (error) {
+        console.error('Error fetching booking URL:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchBookingUrl();
+    
+    // Set up subscription for real-time updates
+    const subscription = supabase
+      .channel('booking_url_changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'calendar_settings_dwd2024' },
+        (payload) => {
+          if (payload.new && payload.new.booking_url) {
+            setBookingUrl(payload.new.booking_url);
+          }
+        }
+      )
+      .subscribe();
+      
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  if (loading || !isModalOpen) return null;
 
   return (
     <AnimatePresence>
@@ -47,18 +95,14 @@ const BookingModal = () => {
               </div>
             </div>
             
-            <div className="p-6">
-              <div className="bg-gray-50 rounded-lg p-8 text-center">
-                <p className="text-gray-600 mb-4">
-                  Calendar integration will be embedded here
-                </p>
-                <div className="text-sm text-gray-500">
-                  <p>Embed code placeholder for booking calendar</p>
-                  <p className="mt-2">
-                    (e.g., Calendly, Acuity Scheduling, or similar service)
-                  </p>
-                </div>
-              </div>
+            <div className="p-0 overflow-hidden h-[70vh]">
+              <iframe 
+                src={bookingUrl}
+                frameBorder="0" 
+                className="w-full h-full"
+                title="Book Your Consultation"
+                allow="camera; microphone; autoplay; encrypted-media; fullscreen;"
+              ></iframe>
             </div>
           </motion.div>
         </motion.div>
